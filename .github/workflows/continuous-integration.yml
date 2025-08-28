@@ -107,9 +107,7 @@ jobs:
           handler: ${{ matrix.aws_lambda.handler }}
           runtime: ${{ matrix.aws_lambda.runtime }}
           role: ${{ vars.AWS_LAMBDA_ROLE_ARN }}
-          tags: |
-            project=puffin
-            version=0.1.0
+          tags: '{"environment": "production", "project": "puffin", "version": "0.1.0"}'
 
 
       # # Runs a single command using the runners shell
