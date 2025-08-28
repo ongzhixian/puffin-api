@@ -59,7 +59,7 @@ jobs:
       - name: Create AWS Lambda Function artifact
         uses: actions/upload-artifact@v4
         with:
-          name: aws-lambda-package                # Name of the artifact (aws-lambda-package.zip)
+          name: ${{ matrix.aws_lambda.function_name }}-package                # Name of the artifact (aws-lambda-package.zip)
           path: |                                 # Note: Use unix style path (./). Does not work with Windows style path (.\).
             ${{ vars.LAMBDA_SRC_FOLDER_PATH }}  
 
