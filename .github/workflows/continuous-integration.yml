@@ -34,15 +34,15 @@ jobs:
       #       So, we are using `actions/upload-artifact` to package the source files instead.
       #       However, we later find that we cannot reference the result zip file created by `actions/upload-artifact`
       #       *roll-eyes and give-up* So doing double packaging instead.
-      - name: Packaging Lambda Function
-        run: |
-          $publish_file_path = '${{ vars.LAMBDA_ZIP_FILE_PATH }}'
-          [string[]]$file_list = Get-ChildItem ${{ vars.LAMBDA_SRC_FOLDER_PATH }}
-          $archive_specs = @{
-            Path = $file_list
-            DestinationPath = $publish_file_path
-          }
-          Compress-Archive @archive_specs -Force
+      # - name: Packaging Lambda Function
+      #   run: |
+      #     $publish_file_path = '${{ vars.LAMBDA_ZIP_FILE_PATH }}'
+      #     [string[]]$file_list = Get-ChildItem ${{ vars.LAMBDA_SRC_FOLDER_PATH }}
+      #     $archive_specs = @{
+      #       Path = $file_list
+      #       DestinationPath = $publish_file_path
+      #     }
+      #     Compress-Archive @archive_specs -Force
 
       # Note: Create artifact; More of a proof-of-concept step in this example
       #       The common use-case is to expose what we are packaging as distributables.
@@ -94,7 +94,7 @@ jobs:
         uses: aws-actions/aws-lambda-deploy@v1
         with:
           function-name: puffin_sample1
-          code-artifacts-dir: ./dist
+          code-artifacts-dir: ${{ vars.LAMBDA_SRC_FOLDER_PATH }}
           handler: sample.sample_lambda1
           runtime: python3.10
           role: ${{ vars.AWS_LAMBDA_ROLE_ARN }}
