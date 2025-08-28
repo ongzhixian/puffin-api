@@ -14,6 +14,15 @@ jobs:
     defaults:
       run:
         shell: pwsh
+    strategy:
+      matrix:
+        aws_lambda:
+          - function_name: puffin_sample1
+            handler: sample.sample_lambda1
+            runtime: python3.10
+          - function_name: puffin_sample2
+            handler: sample.sample_lambda2
+            runtime: python3.10
 
     steps:
       - uses: actions/checkout@v4
@@ -93,11 +102,14 @@ jobs:
       - name: Deploy Lambda Function
         uses: aws-actions/aws-lambda-deploy@v1
         with:
-          function-name: puffin_sample1
+          function-name: ${{ matrix.aws_lambda.function_name }}
           code-artifacts-dir: ${{ vars.LAMBDA_SRC_FOLDER_PATH }}
-          handler: sample.sample_lambda1
-          runtime: python3.10
+          handler: ${{ matrix.aws_lambda.handler }}
+          runtime: ${{ matrix.aws_lambda.runtime }}
           role: ${{ vars.AWS_LAMBDA_ROLE_ARN }}
+          tags: |
+            project=puffin
+            version=0.1.0
 
 
       # # Runs a single command using the runners shell
