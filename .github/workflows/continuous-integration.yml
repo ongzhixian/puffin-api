@@ -99,7 +99,7 @@ jobs:
       - name: List files (for debugging)
         run: ls -R
 
-      - name: Deploy Lambda Function
+      - name: Deploy ${{ matrix.aws_lambda.function_name }}
         uses: aws-actions/aws-lambda-deploy@v1
         with:
           function-name: ${{ matrix.aws_lambda.function_name }}
