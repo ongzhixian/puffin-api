@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Deploy to lambda
+    name: Deploy ${{ matrix.aws_lambda.function_name }}
     runs-on: ubuntu-latest
     defaults:
       run:
