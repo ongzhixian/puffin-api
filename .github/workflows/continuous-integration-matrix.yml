@@ -1,5 +1,10 @@
 name: Continuous Integration (all)
 
+# Workflow that deploys all AWS Lambda
+# Status: Shelved
+# Reason: Still trying to think of a better way rather than deploy all the AWS lambda (even if its technically correct approach).
+#         Another thing is that the matrix is currently hardcoded; we want to make it dynamic.
+
 on:
   push:
     branches: [ "main" ]
