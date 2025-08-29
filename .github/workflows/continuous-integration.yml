@@ -9,20 +9,11 @@ on:
 
 jobs:
   build:
-    name: Deploy ${{ matrix.aws_lambda.function_name }}
+    name: Deploy AWS Lambda
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: pwsh
-    strategy:
-      matrix:
-        aws_lambda:
-          - function_name: puffin_sample1
-            handler: sample.sample_lambda1
-            runtime: python3.10
-          - function_name: puffin_sample2
-            handler: sample.sample_lambda2
-            runtime: python3.10
 
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +50,7 @@ jobs:
       - name: Create AWS Lambda Function artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.aws_lambda.function_name }}-package                # Name of the artifact (aws-lambda-package.zip)
+          name: aws-lambda-package                # Name of the artifact (aws-lambda-package.zip)
           path: |                                 # Note: Use unix style path (./). Does not work with Windows style path (.\).
             ${{ vars.LAMBDA_SRC_FOLDER_PATH }}  
 
@@ -99,15 +90,16 @@ jobs:
       - name: List files (for debugging)
         run: ls -R
 
-      - name: Deploy ${{ matrix.aws_lambda.function_name }}
+      - name: Deploy Lambda Function
         uses: aws-actions/aws-lambda-deploy@v1
         with:
-          function-name: ${{ matrix.aws_lambda.function_name }}
+          function-name: puffin_sample1
           code-artifacts-dir: ${{ vars.LAMBDA_SRC_FOLDER_PATH }}
-          handler: ${{ matrix.aws_lambda.handler }}
-          runtime: ${{ matrix.aws_lambda.runtime }}
+          handler: sample.sample_lambda1
+          runtime: python3.10
           role: ${{ vars.AWS_LAMBDA_ROLE_ARN }}
           tags: '{"environment": "production", "project": "puffin", "version": "0.1.0"}'
+
 
 
       # # Runs a single command using the runners shell
