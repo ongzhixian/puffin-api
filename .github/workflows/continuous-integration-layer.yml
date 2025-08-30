@@ -44,7 +44,7 @@ jobs:
           New-Item -ItemType Directory -Path $pip_output_path
           $layer_requirements_path = Join-Path '${{ vars.LAMBDA_LAYER_SRC_FOLDER_PATH }}' "$($layer_name)_layer_requirements.txt"
           Write-Host $layer_requirements_path
-          pip install -r $layer_requirements_path --platform manylinux2014_x86_64 --target $pip_output_path --abi cp310 --only-binary=:all: psycopg2-binary
+          pip install -r $layer_requirements_path --platform manylinux2014_x86_64 --target $pip_output_path --implementation cp --abi cp310 --only-binary=:all: psycopg2-binary
           pip freeze
 
           Compress-Archive $pip_output_path -DestinationPath '${{ vars.LAMBDA_LAYER_ZIP_FILE_PATH }}' -Force
