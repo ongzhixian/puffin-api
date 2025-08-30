@@ -10,7 +10,7 @@ def sample_lambda1(event:dict, context):
         print(error)
         
 
-def sample_lambda1(event:dict, context):
+def sample_lambda2(event:dict, context):
     """Sample lambda function 2
     Use case:
         (example) This function is used to demonstrate how to handle an AWS Lambda event.
