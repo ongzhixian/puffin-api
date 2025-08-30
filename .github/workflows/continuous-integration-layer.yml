@@ -1,4 +1,4 @@
-name: Continuous Integration (Layer)
+name: Continuous Integration (postgres_layer)
 
 # The `aws-actions/aws-lambda-deploy@v1` does not support deploying layers at time of writing (2025-08-30).
 # So we still have to go back to use AWS CLI for that.
@@ -6,23 +6,24 @@ name: Continuous Integration (Layer)
 on:
   push:
     branches: [ "main" ]
+    # paths:
+    #   - "src/aws_lambda_layers/postgres_layer_requirements.txt"
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
-    name: Deploy AWS Lambda
+    name: Deploy AWS Lambda Layer (postgres_layer)
     runs-on: ubuntu-latest
+    env:
+      LAYER_NAME: "postgres"
     defaults:
       run:
         shell: pwsh
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: List files (for debugging)
-        run: ls -R
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
@@ -36,36 +37,39 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install dependencies for ${{ env.LAYER_NAME }}_layer
         run: |
-          $layer_name = 'postgres'
+          # Define Lambda layer temporary build path (pip_output_path)
           Set-Variable temp_layer_folder_path -Option Constant -Value '${{ vars.LAMBDA_LAYER_BUILD_FOLDER_PATH }}'
-          $pip_output_path = Join-Path $temp_layer_folder_path "$layer_name/python"
+          $pip_output_path = Join-Path $temp_layer_folder_path "${{ env.LAYER_NAME }}/python"
+          "pip_output_path is $pip_output_path" | Write-Information -InformationAction Continue
+          
+          # Create the directory (if it does not exist)
           New-Item -ItemType Directory -Path $pip_output_path
-          $layer_requirements_path = Join-Path "${{ vars.LAMBDA_LAYER_SRC_FOLDER_PATH }}" "$($layer_name)_layer_requirements.txt"
-          Write-Host "[DBG] layer_requirements_path" $layer_requirements_path
+          "$pip_output_path directory created." | Write-Information -InformationAction Continue
+
           python -m pip install --upgrade pip
-          Write-Host "[DBG] pip upgrade [DONE]"
-          pip install --target $pip_output_path --platform manylinux2014_x86_64 --abi abi3 --only-binary=:all: psycopg2-binary
-          Write-Host "[DBG] pip upgrade [psycopg2-binary DONE]"
-          #pip install -r $layer_requirements_path
-          pip freeze
+          "Pip upgraded." | Write-Information -InformationAction Continue
+
+          python -m pip install --platform manylinux2014_x86_64 --target $pip_output_path --only-binary=:all: --upgrade psycopg2-binary
+          "psycopg2-binary 2.9.10 installed." | Write-Information -InformationAction Continue
+
+          $layer_requirements_path = Join-Path "${{ vars.LAMBDA_LAYER_SRC_FOLDER_PATH }}" "${{ env.LAYER_NAME }}_layer_requirements.txt"
+          python -m pip install -r $layer_requirements_path --target $pip_output_path
+          "Dependencies in $layer_requirements_path installed." | Write-Information -InformationAction Continue
 
           Compress-Archive $pip_output_path -DestinationPath '${{ vars.LAMBDA_LAYER_ZIP_FILE_PATH }}' -Force
 
-      - name: Create AWS Lambda Function artifact
+      - name: Upload artifact (${{ env.LAYER_NAME }}_layer)
         uses: actions/upload-artifact@v4
         with:
           name: aws-lambda-layer                  # Name of the artifact (aws-lambda-layer.zip)
           path: |                                 # Note: Use unix style path (./). Does not work with Windows style path (.\).
             ${{ vars.LAMBDA_LAYER_BUILD_FOLDER_PATH }}
 
-      - name: List files (for debugging)
-        run: ls -R
-
-      - name: Deploy AWS Lambda Layer
+      - name: Deploy ${{ env.LAYER_NAME }}_layer to AWS Lambda Layer
         run: |
-          $layer_name = 'postgres_layer'
+          $layer_name = '${{ env.LAYER_NAME }}_layer'
           $ZipFilePath = '${{ vars.LAMBDA_LAYER_ZIP_FILE_PATH }}'
           aws lambda publish-layer-version `
           --layer-name $layer_name `
@@ -74,6 +78,3 @@ jobs:
           --compatible-runtimes python3.10 `
           --compatible-architectures x86_64 `
           --license-info AGPL-3.0-or-later
-
-      - name: List files (for debugging)
-        run: ls -R

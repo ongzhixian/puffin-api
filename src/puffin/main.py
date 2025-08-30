@@ -142,7 +142,7 @@ def TODO_delete_account_transaction(event:dict, context):
 def main():
     import psycopg2
 
-    conn_string = 'postgresql://neondb_owner:npg_ZSuJVw1OK9yC@ep-late-darkness-a1azdjxh-pooler.ap-southeast-1.aws.neon.tech/puffin?sslmode=require&channel_binding=require'
+    conn_string = ''
 
     conn = psycopg2.connect(conn_string)
     print("Connection established")

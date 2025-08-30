@@ -24,7 +24,6 @@ def sample_lambda1(event:dict, context):
             print("Data row = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
 
         # Clean up
-        conn.commit()
         cursor.close()
         conn.close()
     except Exception as error:
