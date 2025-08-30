@@ -46,7 +46,7 @@ jobs:
           Write-Host $layer_requirements_path
           python -m pip install --upgrade pip
           pip install --target $pip_output_path --platform manylinux2014_x86_64 --abi abi3 --only-binary=:all: psycopg2-binary
-          pip install -r $layer_requirements_path
+          #pip install -r $layer_requirements_path
           pip freeze
 
           Compress-Archive $pip_output_path -DestinationPath '${{ vars.LAMBDA_LAYER_ZIP_FILE_PATH }}' -Force
