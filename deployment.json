@@ -1,0 +1,14 @@
+{
+  "aws_lambda": [
+    {
+      "function_name": "puffin_sample1",
+      "handler": "sample.sample_lambda1",
+      "runtime": "python3.10"
+    },
+    {
+      "function_name": "puffin_sample2",
+      "handler": "sample.sample_lambda2",
+      "runtime": "python3.10"
+    }
+  ]
+}

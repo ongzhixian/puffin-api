@@ -43,9 +43,11 @@ jobs:
           $pip_output_path = Join-Path $temp_layer_folder_path "$layer_name/python"
           New-Item -ItemType Directory -Path $pip_output_path
           $layer_requirements_path = Join-Path "${{ vars.LAMBDA_LAYER_SRC_FOLDER_PATH }}" "$($layer_name)_layer_requirements.txt"
-          Write-Host $layer_requirements_path
+          Write-Host "[DBG] layer_requirements_path" $layer_requirements_path
           python -m pip install --upgrade pip
+          Write-Host "[DBG] pip upgrade [DONE]"
           pip install --target $pip_output_path --platform manylinux2014_x86_64 --abi abi3 --only-binary=:all: psycopg2-binary
+          Write-Host "[DBG] pip upgrade [psycopg2-binary DONE]"
           #pip install -r $layer_requirements_path
           pip freeze
 

@@ -138,3 +138,43 @@ def TODO_delete_account_transaction(event:dict, context):
             'statusCode': 500,
             'body': json.dumps({'message': 'Internal Server Error', 'error': str(e)})
         }
+
+def main():
+    import psycopg2
+
+    conn_string = 'postgresql://neondb_owner:npg_ZSuJVw1OK9yC@ep-late-darkness-a1azdjxh-pooler.ap-southeast-1.aws.neon.tech/puffin?sslmode=require&channel_binding=require'
+
+    conn = psycopg2.connect(conn_string)
+    print("Connection established")
+    cursor = conn.cursor()
+    
+    # Fetch all rows from table
+    cursor.execute("SELECT * FROM app_user;")
+    rows = cursor.fetchall()
+
+    # Print all rows
+    for row in rows:
+        print("Data row = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
+
+
+    # # Drop previous table of same name if one exists
+    # cursor.execute("DROP TABLE IF EXISTS inventory;")
+    # print("Finished dropping table (if existed)")
+
+    # # Create a table
+    # cursor.execute("CREATE TABLE inventory (id serial PRIMARY KEY, name VARCHAR(50), quantity INTEGER);")
+    # print("Finished creating table")
+
+    # # Insert some data into the table
+    # cursor.execute("INSERT INTO inventory (name, quantity) VALUES (%s, %s);", ("banana", 150))
+    # cursor.execute("INSERT INTO inventory (name, quantity) VALUES (%s, %s);", ("orange", 154))
+    # cursor.execute("INSERT INTO inventory (name, quantity) VALUES (%s, %s);", ("apple", 100))
+    # print("Inserted 3 rows of data")
+
+    # Clean up
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+if __name__ == '__main__':
+    main()
