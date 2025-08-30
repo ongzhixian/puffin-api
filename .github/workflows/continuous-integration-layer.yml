@@ -1,4 +1,4 @@
-name: TODO Continuous Integration (Layer)
+name: Continuous Integration (Layer)
 
 # The `aws-actions/aws-lambda-deploy@v1` does not support deploying layers at time of writing (2025-08-30).
 # So we still have to go back to use AWS CLI for that.
@@ -42,10 +42,11 @@ jobs:
           Set-Variable temp_layer_folder_path -Option Constant -Value '${{ vars.LAMBDA_LAYER_BUILD_FOLDER_PATH }}'
           $pip_output_path = Join-Path $temp_layer_folder_path "$layer_name/python"
           New-Item -ItemType Directory -Path $pip_output_path
-          $layer_requirements_path = Join-Path '${{ vars.LAMBDA_LAYER_SRC_FOLDER_PATH }}' "$($layer_name)_layer_requirements.txt"
+          $layer_requirements_path = Join-Path "${{ vars.LAMBDA_LAYER_SRC_FOLDER_PATH }}" "$($layer_name)_layer_requirements.txt"
           Write-Host $layer_requirements_path
           python -m pip install --upgrade pip
-          pip install -r $layer_requirements_path --platform manylinux2014_x86_64 --target $pip_output_path --implementation cp --abi cp310 --only-binary=:all: psycopg2-binary
+          pip install --target $pip_output_path --platform manylinux2014_x86_64 --abi abi3 --only-binary=:all: psycopg2-binary
+          pip install -r $layer_requirements_path
           pip freeze
 
           Compress-Archive $pip_output_path -DestinationPath '${{ vars.LAMBDA_LAYER_ZIP_FILE_PATH }}' -Force
