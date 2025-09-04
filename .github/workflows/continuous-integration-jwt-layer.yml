@@ -51,6 +51,9 @@ jobs:
           python -m pip install --upgrade pip
           "Pip upgraded." | Write-Information -InformationAction Continue
 
+          python -m pip install --platform manylinux2014_x86_64 --target $pip_output_path --only-binary=:all: --upgrade jwcrypto
+          "psycopg2-binary 1.5.6 installed." | Write-Information -InformationAction Continue
+
           $layer_requirements_path = Join-Path "${{ vars.LAMBDA_LAYER_SRC_FOLDER_PATH }}" "${{ env.LAYER_NAME }}_layer_requirements.txt"
           python -m pip install -r $layer_requirements_path --target $pip_output_path
           "Dependencies in $layer_requirements_path installed." | Write-Information -InformationAction Continue
