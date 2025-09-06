@@ -7,7 +7,7 @@ from typing import Dict
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-def ut_get_favicon_ico(event: Dict, context: object) -> Dict:
+def get_favicon_ico(event: Dict, context: object) -> Dict:
     """
     Redirects API Gateway requests to the application's favicon.ico file hosted on S3.
 

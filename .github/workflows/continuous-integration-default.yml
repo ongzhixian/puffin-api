@@ -1,0 +1,72 @@
+name: Continuous Integration (default)
+
+# Workflow that deploys all AWS Lambda
+# Status: Shelved
+# Reason: Still trying to think of a better way rather than deploy all the AWS lambda (even if its technically correct approach).
+#         Another thing is that the matrix is currently hardcoded; we want to make it dynamic.
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'src/puffin/default.py'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'src/puffin/default.py'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Deploy ${{ matrix.aws_lambda.function_name }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+    strategy:
+      matrix:
+        aws_lambda:
+          - function_name: puffin_get_favicon_ico
+            handler: default.get_favicon_ico
+            runtime: python3.10
+          # - function_name: puffin_sample2
+          #   handler: sample.sample_lambda2
+          #   runtime: python3.10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: List files (for debugging)
+        run: ls -R
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+
+
+      # Note: Create artifact; More of a proof-of-concept step in this example
+      #       The common use-case is to expose what we are packaging as distributables.
+      #       Arguably we can view this elsewhere in the case of AWS Lambda but what other tech stack may be more limiting.
+      - name: Create AWS Lambda Function artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.aws_lambda.function_name }}-package                # Name of the artifact (aws-lambda-package.zip)
+          path: |                                 # Note: Use unix style path (./). Does not work with Windows style path (.\).
+            ${{ vars.LAMBDA_SRC_FOLDER_PATH }}  
+
+      - name: List files (for debugging)
+        run: ls -R
+
+      - name: Deploy ${{ matrix.aws_lambda.function_name }}
+        uses: aws-actions/aws-lambda-deploy@v1
+        with:
+          function-name: ${{ matrix.aws_lambda.function_name }}
+          code-artifacts-dir: ${{ vars.LAMBDA_SRC_FOLDER_PATH }}
+          handler: ${{ matrix.aws_lambda.handler }}
+          runtime: ${{ matrix.aws_lambda.runtime }}
+          role: ${{ vars.AWS_LAMBDA_ROLE_ARN }}
+          tags: '{"environment": "production", "project": "puffin", "version": "0.1.0"}'
