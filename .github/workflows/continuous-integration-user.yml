@@ -28,11 +28,11 @@ jobs:
         aws_lambda:
           - function_name: puffin_get_user_list
             function_description: GET /user
-            handler: auth.get_user_list
+            handler: user.get_user_list
             runtime: python3.10
           - function_name: puffin_add_user
             function_description: POST /user
-            handler: auth.add_user
+            handler: user.add_user
             runtime: python3.10
 
     steps:

@@ -1,4 +1,4 @@
-name: Continuous Integration (auth)
+name: Continuous Integration (jwt)
 
 # Workflow that deploys all AWS Lambda
 # Status: Shelved
@@ -9,11 +9,11 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'src/puffin/auth.py'
+      - 'src/puffin/jwt.py'
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'src/puffin/auth.py'
+      - 'src/puffin/jwt.py'
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
       matrix:
         aws_lambda:
           - function_name: puffin_post_jwt
-            handler: auth.post_jwt
+            handler: jwt.post_jwt
             runtime: python3.10
           # - function_name: puffin_sample2
           #   handler: sample.sample_lambda2
