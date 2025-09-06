@@ -40,7 +40,7 @@ class UserRepository(BaseRepository):
         with self.db_cursor() as cursor:
             cursor.execute('SELECT "id", "username" FROM public.app_user;')
             rows = cursor.fetchall()
-            return [User(user_id=row[0], username=row[1]) for row in rows]
+            return [User(id=row[0], username=row[1]) for row in rows]
 
     # EXAMPLES
 
