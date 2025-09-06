@@ -83,7 +83,7 @@ class UserRepository(BaseRepository):
 
 # ENDPOINT: /user
 
-def get_user_list(event:dict, context):
+def get_user_list(event:dict, context) -> list[User]:
     """
     Authenticates given credentials and return JWT
     
@@ -96,32 +96,11 @@ def get_user_list(event:dict, context):
     """
     try:
         repo = UserRepository()
-        rows = repo.get_user_list()
-        for row in rows:
-            print(row)
-            # print("Data rowa = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
-
-        # PUFFIN_DB_CONNECTION_STRING = os.environ.get('PUFFIN_DB_CONNECTION_STRING', '')
-
-        # db = psycopg2.connect(PUFFIN_DB_CONNECTION_STRING)
-        # print("Connection established")
-        # cursor = db.cursor()
-
-        # cursor.execute("SELECT * FROM app_user;")
-        # rows = cursor.fetchall()
-
-        # for row in rows:
-        #     print("Data row = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
-
-        # cursor.close()
-        # db.close()
-
-        # Add your logic here
+        user_list = repo.get_user_list()
         return {
             'statusCode': 200,
-            'body': json.dumps({'message': 'TODO: OK TAKE 2'})
+            'body': json.dumps(user_list)
         }
-    
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
         return {
