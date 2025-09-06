@@ -26,8 +26,8 @@ jobs:
     strategy:
       matrix:
         aws_lambda:
-          - function_name: puffin_authenticate
-            handler: auth.authenticate
+          - function_name: puffin_post_jwt
+            handler: auth.post_jwt
             runtime: python3.10
           # - function_name: puffin_sample2
           #   handler: sample.sample_lambda2

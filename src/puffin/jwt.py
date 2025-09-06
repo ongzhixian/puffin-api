@@ -6,7 +6,7 @@
 # update_user_status: Update user status (activation/deactivation); consider specific accounts for each scenario.
 
 # Routes planning
-# POST  /authenticate   -- TODO_authenticate
+# POST  /jwt            -- TODO_post_jwt
 # GET   /user           -- TODO_get_user
 # POST  /user           -- TODO_add_user
 # PATCH /user/password  -- TODO_update_user_password
@@ -26,7 +26,7 @@ logger.setLevel(logging.INFO)
 
 # ENDPOINT: /authenticate
 
-def authenticate(event:dict, context):
+def post_jwt(event:dict, context):
     """
     Authenticates given credentials and return JWT
     
