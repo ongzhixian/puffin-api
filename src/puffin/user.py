@@ -98,7 +98,8 @@ def get_user_list(event:dict, context):
         repo = UserRepository()
         rows = repo.get_user_list()
         for row in rows:
-            print("Data rowa = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
+            print(row)
+            # print("Data rowa = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
 
         # PUFFIN_DB_CONNECTION_STRING = os.environ.get('PUFFIN_DB_CONNECTION_STRING', '')
 
