@@ -56,7 +56,7 @@ def get_user_list(event:dict, context):
         # Add your logic here
         return {
             'statusCode': 200,
-            'body': json.dumps({'message': 'TODO: .'})
+            'body': json.dumps({'message': 'TODO: OK'})
         }
     
     except Exception as e:
