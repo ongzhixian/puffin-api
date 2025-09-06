@@ -15,14 +15,71 @@
 import json
 import logging
 import os
-# import os
+from dataclasses import dataclass
+
 # import boto3
 import psycopg2
+
+from database import BaseRepository
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 # s3_client = boto3.client('s3')
 
+
+@dataclass
+class User:
+    id: int
+    username: str
+
+class UserRepository(BaseRepository):
+    """User repository for direct SQL queries."""
+        
+    def get_user_list(self) -> list[User]:
+        """Finds all users using raw SQL."""
+        with self.db_cursor() as cursor:
+            cursor.execute('SELECT "id", "username" FROM public.app_user;')
+            rows = cursor.fetchall()
+            return [User(user_id=row[0], username=row[1]) for row in rows]
+
+    # EXAMPLES
+
+    def _get_all_generic(self) -> list[tuple]:
+        """Example of generic Finds all users using raw SQL."""
+        with self.db_cursor() as cursor:
+            cursor.execute("SELECT * FROM app_user;")
+            rows = cursor.fetchall()
+            return rows            
+
+    # def get_by_id(self, user_id: int) -> Dict[str, Any] | None:
+    #     """Finds a user by ID using raw SQL."""
+    #     with get_db_cursor() as cur:
+    #         cur.execute("SELECT id, name, email FROM users WHERE id = %s", (user_id,))
+    #         user = cur.fetchone()
+    #         if user:
+    #             # Return a dictionary for consistency
+    #             return dict(zip([desc[0] for desc in cur.description], user))
+    #         return None
+
+    # def create(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     """Creates a new user and returns the created record."""
+    #     with get_db_cursor() as cur:
+    #         # We explicitly define columns to prevent SQL injection with a dictionary
+    #         cur.execute(
+    #             "INSERT INTO users (name, email, hashed_password) VALUES (%s, %s, %s) RETURNING id, name, email",
+    #             (user_data["name"], user_data["email"], user_data["hashed_password"])
+    #         )
+    #         new_user = cur.fetchone()
+    #         return dict(zip([desc[0] for desc in cur.description], new_user))
+
+    # def get_by_email(self, email: str) -> Dict[str, Any] | None:
+    #     """Finds a user by email."""
+    #     with get_db_cursor() as cur:
+    #         cur.execute("SELECT id, name, email FROM users WHERE email = %s", (email,))
+    #         user = cur.fetchone()
+    #         if user:
+    #             return dict(zip([desc[0] for desc in cur.description], user))
+    #         return None
 
 # ENDPOINT: /user
 
@@ -38,20 +95,25 @@ def get_user_list(event:dict, context):
         dict: A response indicating success or failure.
     """
     try:
-        PUFFIN_DB_CONNECTION_STRING = os.environ.get('PUFFIN_DB_CONNECTION_STRING', '')
-
-        db = psycopg2.connect(PUFFIN_DB_CONNECTION_STRING)
-        print("Connection established")
-        cursor = db.cursor()
-
-        cursor.execute("SELECT * FROM app_user;")
-        rows = cursor.fetchall()
-
+        repo = UserRepository()
+        rows = repo.get_all()
         for row in rows:
-            print("Data row = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
+            print("Data rowa = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
 
-        cursor.close()
-        db.close()
+        # PUFFIN_DB_CONNECTION_STRING = os.environ.get('PUFFIN_DB_CONNECTION_STRING', '')
+
+        # db = psycopg2.connect(PUFFIN_DB_CONNECTION_STRING)
+        # print("Connection established")
+        # cursor = db.cursor()
+
+        # cursor.execute("SELECT * FROM app_user;")
+        # rows = cursor.fetchall()
+
+        # for row in rows:
+        #     print("Data row = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
+
+        # cursor.close()
+        # db.close()
 
         # Add your logic here
         return {
