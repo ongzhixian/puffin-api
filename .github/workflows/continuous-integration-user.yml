@@ -27,9 +27,11 @@ jobs:
       matrix:
         aws_lambda:
           - function_name: puffin_get_user_list
+            function_description: GET /user
             handler: auth.get_user_list
             runtime: python3.10
           - function_name: puffin_add_user
+            function_description: POST /user
             handler: auth.add_user
             runtime: python3.10
 
@@ -64,8 +66,11 @@ jobs:
         uses: aws-actions/aws-lambda-deploy@v1
         with:
           function-name: ${{ matrix.aws_lambda.function_name }}
+          function-description: ${{ matrix.aws_lambda.function_description }}
           code-artifacts-dir: ${{ vars.LAMBDA_SRC_FOLDER_PATH }}
           handler: ${{ matrix.aws_lambda.handler }}
           runtime: ${{ matrix.aws_lambda.runtime }}
           role: ${{ vars.AWS_LAMBDA_ROLE_ARN }}
           tags: '{"environment": "production", "project": "puffin", "version": "0.1.0"}'
+          environment: '{"PUFFIN_DB_CONNECTION_STRING": "${{ secrets.PUFFIN_DB_CONNECTION_STRING }}"}'
+          

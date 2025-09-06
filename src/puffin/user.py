@@ -6,7 +6,6 @@
 # update_user_status: Update user status (activation/deactivation); consider specific accounts for each scenario.
 
 # Routes planning
-# POST  /authenticate   -- TODO_authenticate
 # GET   /user           -- TODO_get_user
 # POST  /user           -- TODO_add_user
 # PATCH /user/password  -- TODO_update_user_password
@@ -15,9 +14,10 @@
 
 import json
 import logging
+import os
 # import os
 # import boto3
-from jwcrypto.jwk import JWK
+import psycopg2
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -38,6 +38,21 @@ def get_user_list(event:dict, context):
         dict: A response indicating success or failure.
     """
     try:
+        PUFFIN_DB_CONNECTION_STRING = os.environ.get('PUFFIN_NEONDB_CONNECTION_STRING', '')
+
+        db = psycopg2.connect(PUFFIN_DB_CONNECTION_STRING)
+        print("Connection established")
+        cursor = db.cursor()
+
+        cursor.execute("SELECT * FROM app_user;")
+        rows = cursor.fetchall()
+
+        for row in rows:
+            print("Data row = (%s, %s, %s)" %(str(row[0]), str(row[1]), str(row[2])))
+
+        cursor.close()
+        db.close()
+
         # Add your logic here
         return {
             'statusCode': 200,
