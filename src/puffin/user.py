@@ -38,7 +38,7 @@ def get_user_list(event:dict, context):
         dict: A response indicating success or failure.
     """
     try:
-        PUFFIN_DB_CONNECTION_STRING = os.environ.get('PUFFIN_NEONDB_CONNECTION_STRING', '')
+        PUFFIN_DB_CONNECTION_STRING = os.environ.get('PUFFIN_DB_CONNECTION_STRING', '')
 
         db = psycopg2.connect(PUFFIN_DB_CONNECTION_STRING)
         print("Connection established")
