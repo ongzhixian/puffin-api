@@ -18,7 +18,7 @@ import os
 import hashlib
 import base64
 import secrets
-from dataclasses import dataclass
+from dataclasses import dataclass, is_dataclass, asdict
 
 # import boto3
 import psycopg2
@@ -34,6 +34,15 @@ logger.setLevel(logging.INFO)
 class User:
     id: int
     username: str
+    class JsonEncoder(json.JSONEncoder):
+        """
+        A custom JSON encoder that can handle dataclasses.
+        This provides a robust way to serialize any dataclass in your application without modifying the classes themselves.
+        """
+        def default(self, obj):
+            if is_dataclass(obj):
+                return asdict(obj)
+            return super().default(obj)
 
 @dataclass
 class PasswordSet:
@@ -263,7 +272,7 @@ def get_user_list(event:dict, context) -> list[User]:
         user_list = repo.get_user_list()
         return {
             'statusCode': 200,
-            'body': json.dumps(user_list)
+            'body': json.dumps(user_list, cls=User.JsonEncoder)
         }
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
